@@ -1,0 +1,15 @@
+version: '3.2'
+services:
+  hashtag_postgres:
+    restart: always
+    image: postgres:10.5
+    environment:
+      - POSTGRES_DB=hashtag
+      - POSTGRES_USER=hashtag
+      - POSTGRES_PASSWORD=hashtag
+    ports:
+      - "7777:5432"
+    volumes:
+      - hashtag_db_data:/var/lib/postgresql/hashtag/data
+volumes:
+  hashtag_db_data:
