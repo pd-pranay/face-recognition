@@ -1,1 +1,0 @@
-goose postgres "postgresql://localhost:7777/hashtag?user=hashtag&password=hashtag&sslmode=${ADRY_DB_SSL}" status
