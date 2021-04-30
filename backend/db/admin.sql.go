@@ -32,6 +32,39 @@ func (q *Queries) CreateAdmin(ctx context.Context, arg CreateAdminParams) (Creat
 	return i, err
 }
 
+const listAllAdmin = `-- name: ListAllAdmin :many
+SELECT id, name, email FROM admin
+`
+
+type ListAllAdminRow struct {
+	ID    uuid.UUID `json:"id"`
+	Name  string    `json:"name"`
+	Email string    `json:"email"`
+}
+
+func (q *Queries) ListAllAdmin(ctx context.Context) ([]ListAllAdminRow, error) {
+	rows, err := q.query(ctx, q.listAllAdminStmt, listAllAdmin)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListAllAdminRow
+	for rows.Next() {
+		var i ListAllAdminRow
+		if err := rows.Scan(&i.ID, &i.Name, &i.Email); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const login = `-- name: Login :one
 SELECT id, name, email, password FROM admin WHERE email = ($1)
 `

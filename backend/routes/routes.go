@@ -30,16 +30,20 @@ func PostsRoutes(app fiber.Router, pc *controllers.PostsController) {
 }
 
 // AdminRoutes routes
-func AdminRoutes(app fiber.Router, pc *controllers.AdminController) {
-	// admin := app.Group("/admin")
+func AdminRoutes(app fiber.Router, ac *controllers.AdminController) {
+	admin := app.Group("/admin")
 
-	// admin.Post("/create", func(c *fiber.Ctx) error {
-	// 	// return error
-	// })
+	admin.Post("/create", func(c *fiber.Ctx) error {
+		return ac.CreateAdmin(c)
+	})
 
-	// admin.Post("/login", func(c *fiber.Ctx) error {
-	// 	// return error
-	// })
+	admin.Post("/login", func(c *fiber.Ctx) error {
+		return ac.Login(c)
+	})
+
+	admin.Get("/", func(c *fiber.Ctx) error {
+		return ac.ListAdmins(c)
+	})
 }
 
 // UsersRoutes routes

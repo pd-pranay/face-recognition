@@ -40,6 +40,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getPostsByTagStmt, err = db.PrepareContext(ctx, getPostsByTag); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPostsByTag: %w", err)
 	}
+	if q.listAllAdminStmt, err = db.PrepareContext(ctx, listAllAdmin); err != nil {
+		return nil, fmt.Errorf("error preparing query ListAllAdmin: %w", err)
+	}
 	if q.loginStmt, err = db.PrepareContext(ctx, login); err != nil {
 		return nil, fmt.Errorf("error preparing query Login: %w", err)
 	}
@@ -82,6 +85,11 @@ func (q *Queries) Close() error {
 	if q.getPostsByTagStmt != nil {
 		if cerr := q.getPostsByTagStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPostsByTagStmt: %w", cerr)
+		}
+	}
+	if q.listAllAdminStmt != nil {
+		if cerr := q.listAllAdminStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listAllAdminStmt: %w", cerr)
 		}
 	}
 	if q.loginStmt != nil {
@@ -144,6 +152,7 @@ type Queries struct {
 	getAllPostsStmt   *sql.Stmt
 	getPostByIDStmt   *sql.Stmt
 	getPostsByTagStmt *sql.Stmt
+	listAllAdminStmt  *sql.Stmt
 	loginStmt         *sql.Stmt
 	readAllStmt       *sql.Stmt
 	readByIDStmt      *sql.Stmt
@@ -159,6 +168,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		getAllPostsStmt:   q.getAllPostsStmt,
 		getPostByIDStmt:   q.getPostByIDStmt,
 		getPostsByTagStmt: q.getPostsByTagStmt,
+		listAllAdminStmt:  q.listAllAdminStmt,
 		loginStmt:         q.loginStmt,
 		readAllStmt:       q.readAllStmt,
 		readByIDStmt:      q.readByIDStmt,

@@ -3,3 +3,6 @@ INSERT INTO admin (name, email, password) VALUES ($1, $2, $3) RETURNING id, name
 
 -- name: Login :one
 SELECT id, name, email, password FROM admin WHERE email = ($1);
+
+-- name: ListAllAdmin :many
+SELECT id, name, email FROM admin;
