@@ -22,14 +22,14 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
-	if q.createStmt, err = db.PrepareContext(ctx, create); err != nil {
-		return nil, fmt.Errorf("error preparing query Create: %w", err)
-	}
 	if q.createAdminStmt, err = db.PrepareContext(ctx, createAdmin); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateAdmin: %w", err)
 	}
 	if q.createPostStmt, err = db.PrepareContext(ctx, createPost); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePost: %w", err)
+	}
+	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
 	}
 	if q.getAllPostsStmt, err = db.PrepareContext(ctx, getAllPosts); err != nil {
 		return nil, fmt.Errorf("error preparing query GetAllPosts: %w", err)
@@ -46,22 +46,17 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.loginStmt, err = db.PrepareContext(ctx, login); err != nil {
 		return nil, fmt.Errorf("error preparing query Login: %w", err)
 	}
-	if q.readAllStmt, err = db.PrepareContext(ctx, readAll); err != nil {
-		return nil, fmt.Errorf("error preparing query ReadAll: %w", err)
+	if q.readAllUsersStmt, err = db.PrepareContext(ctx, readAllUsers); err != nil {
+		return nil, fmt.Errorf("error preparing query ReadAllUsers: %w", err)
 	}
-	if q.readByIDStmt, err = db.PrepareContext(ctx, readByID); err != nil {
-		return nil, fmt.Errorf("error preparing query ReadByID: %w", err)
+	if q.readUserByIDStmt, err = db.PrepareContext(ctx, readUserByID); err != nil {
+		return nil, fmt.Errorf("error preparing query ReadUserByID: %w", err)
 	}
 	return &q, nil
 }
 
 func (q *Queries) Close() error {
 	var err error
-	if q.createStmt != nil {
-		if cerr := q.createStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createStmt: %w", cerr)
-		}
-	}
 	if q.createAdminStmt != nil {
 		if cerr := q.createAdminStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createAdminStmt: %w", cerr)
@@ -70,6 +65,11 @@ func (q *Queries) Close() error {
 	if q.createPostStmt != nil {
 		if cerr := q.createPostStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createPostStmt: %w", cerr)
+		}
+	}
+	if q.createUserStmt != nil {
+		if cerr := q.createUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
 		}
 	}
 	if q.getAllPostsStmt != nil {
@@ -97,14 +97,14 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing loginStmt: %w", cerr)
 		}
 	}
-	if q.readAllStmt != nil {
-		if cerr := q.readAllStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing readAllStmt: %w", cerr)
+	if q.readAllUsersStmt != nil {
+		if cerr := q.readAllUsersStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing readAllUsersStmt: %w", cerr)
 		}
 	}
-	if q.readByIDStmt != nil {
-		if cerr := q.readByIDStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing readByIDStmt: %w", cerr)
+	if q.readUserByIDStmt != nil {
+		if cerr := q.readUserByIDStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing readUserByIDStmt: %w", cerr)
 		}
 	}
 	return err
@@ -146,31 +146,31 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 type Queries struct {
 	db                DBTX
 	tx                *sql.Tx
-	createStmt        *sql.Stmt
 	createAdminStmt   *sql.Stmt
 	createPostStmt    *sql.Stmt
+	createUserStmt    *sql.Stmt
 	getAllPostsStmt   *sql.Stmt
 	getPostByIDStmt   *sql.Stmt
 	getPostsByTagStmt *sql.Stmt
 	listAllAdminStmt  *sql.Stmt
 	loginStmt         *sql.Stmt
-	readAllStmt       *sql.Stmt
-	readByIDStmt      *sql.Stmt
+	readAllUsersStmt  *sql.Stmt
+	readUserByIDStmt  *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
 		db:                tx,
 		tx:                tx,
-		createStmt:        q.createStmt,
 		createAdminStmt:   q.createAdminStmt,
 		createPostStmt:    q.createPostStmt,
+		createUserStmt:    q.createUserStmt,
 		getAllPostsStmt:   q.getAllPostsStmt,
 		getPostByIDStmt:   q.getPostByIDStmt,
 		getPostsByTagStmt: q.getPostsByTagStmt,
 		listAllAdminStmt:  q.listAllAdminStmt,
 		loginStmt:         q.loginStmt,
-		readAllStmt:       q.readAllStmt,
-		readByIDStmt:      q.readByIDStmt,
+		readAllUsersStmt:  q.readAllUsersStmt,
+		readUserByIDStmt:  q.readUserByIDStmt,
 	}
 }

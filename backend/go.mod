@@ -10,7 +10,7 @@ require (
 	github.com/gofiber/fiber v1.14.6
 	github.com/gofiber/fiber/v2 v2.7.1
 	github.com/gofiber/jwt/v2 v2.2.1
-	github.com/gofrs/uuid v3.3.0+incompatible
+	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/google/uuid v1.1.2
 	github.com/lib/pq v1.10.1
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect

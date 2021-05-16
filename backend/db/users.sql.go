@@ -10,11 +10,11 @@ import (
 	"github.com/google/uuid"
 )
 
-const create = `-- name: Create :one
+const createUser = `-- name: CreateUser :one
 INSERT INTO users (name, college_name, address, mobile_no, image_path, image_uid) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, name, college_name, address, mobile_no, image_uid
 `
 
-type CreateParams struct {
+type CreateUserParams struct {
 	Name        sql.NullString `json:"name"`
 	CollegeName sql.NullString `json:"college_name"`
 	Address     sql.NullString `json:"address"`
@@ -23,7 +23,7 @@ type CreateParams struct {
 	ImageUid    string         `json:"image_uid"`
 }
 
-type CreateRow struct {
+type CreateUserRow struct {
 	ID          uuid.UUID      `json:"id"`
 	Name        sql.NullString `json:"name"`
 	CollegeName sql.NullString `json:"college_name"`
@@ -32,8 +32,8 @@ type CreateRow struct {
 	ImageUid    string         `json:"image_uid"`
 }
 
-func (q *Queries) Create(ctx context.Context, arg CreateParams) (CreateRow, error) {
-	row := q.queryRow(ctx, q.createStmt, create,
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
+	row := q.queryRow(ctx, q.createUserStmt, createUser,
 		arg.Name,
 		arg.CollegeName,
 		arg.Address,
@@ -41,7 +41,7 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (CreateRow, erro
 		arg.ImagePath,
 		arg.ImageUid,
 	)
-	var i CreateRow
+	var i CreateUserRow
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
@@ -53,11 +53,11 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (CreateRow, erro
 	return i, err
 }
 
-const readAll = `-- name: ReadAll :many
+const readAllUsers = `-- name: ReadAllUsers :many
 SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false
 `
 
-type ReadAllRow struct {
+type ReadAllUsersRow struct {
 	ID          uuid.UUID      `json:"id"`
 	Name        sql.NullString `json:"name"`
 	CollegeName sql.NullString `json:"college_name"`
@@ -67,15 +67,15 @@ type ReadAllRow struct {
 	ImageUid    string         `json:"image_uid"`
 }
 
-func (q *Queries) ReadAll(ctx context.Context) ([]ReadAllRow, error) {
-	rows, err := q.query(ctx, q.readAllStmt, readAll)
+func (q *Queries) ReadAllUsers(ctx context.Context) ([]ReadAllUsersRow, error) {
+	rows, err := q.query(ctx, q.readAllUsersStmt, readAllUsers)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ReadAllRow
+	var items []ReadAllUsersRow
 	for rows.Next() {
-		var i ReadAllRow
+		var i ReadAllUsersRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -98,11 +98,11 @@ func (q *Queries) ReadAll(ctx context.Context) ([]ReadAllRow, error) {
 	return items, nil
 }
 
-const readByID = `-- name: ReadByID :one
+const readUserByID = `-- name: ReadUserByID :one
 SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false AND image_uid = ($1)
 `
 
-type ReadByIDRow struct {
+type ReadUserByIDRow struct {
 	ID          uuid.UUID      `json:"id"`
 	Name        sql.NullString `json:"name"`
 	CollegeName sql.NullString `json:"college_name"`
@@ -112,9 +112,9 @@ type ReadByIDRow struct {
 	ImageUid    string         `json:"image_uid"`
 }
 
-func (q *Queries) ReadByID(ctx context.Context, imageUid string) (ReadByIDRow, error) {
-	row := q.queryRow(ctx, q.readByIDStmt, readByID, imageUid)
-	var i ReadByIDRow
+func (q *Queries) ReadUserByID(ctx context.Context, imageUid string) (ReadUserByIDRow, error) {
+	row := q.queryRow(ctx, q.readUserByIDStmt, readUserByID, imageUid)
+	var i ReadUserByIDRow
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
