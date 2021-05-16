@@ -5,10 +5,10 @@ INSERT INTO users (name, college_name, address, mobile_no, image_path, image_uid
 SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false;
 
 -- name: ReadUserByID :one
-SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false AND image_uid = ($1);
+SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false AND id = ($1);
 
---name: DeleteUser :one
-UPDATE users SET is_deleted = true WHERE id = ($1) RETURNING id, name;
+-- name: ReadUsersByFace :many
+SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false AND image_uid IN ($1);
 
---name: UpdateUserByID :one
-UPDATE users SET name = ($1), college_name = ($2), address = ($3), mobile_no = ($4), image_path = ($5), image_uid = ($6) WHERE id = ($1) RETURNING id, name, college_name, address, mobile_no, image_uid, image_path;
+--name: DeleteUser :exec
+UPDATE users SET is_deleted = true WHERE id = ($1);

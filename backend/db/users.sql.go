@@ -99,7 +99,7 @@ func (q *Queries) ReadAllUsers(ctx context.Context) ([]ReadAllUsersRow, error) {
 }
 
 const readUserByID = `-- name: ReadUserByID :one
-SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false AND image_uid = ($1)
+SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false AND id = ($1)
 `
 
 type ReadUserByIDRow struct {
@@ -112,8 +112,8 @@ type ReadUserByIDRow struct {
 	ImageUid    string         `json:"image_uid"`
 }
 
-func (q *Queries) ReadUserByID(ctx context.Context, imageUid string) (ReadUserByIDRow, error) {
-	row := q.queryRow(ctx, q.readUserByIDStmt, readUserByID, imageUid)
+func (q *Queries) ReadUserByID(ctx context.Context, id uuid.UUID) (ReadUserByIDRow, error) {
+	row := q.queryRow(ctx, q.readUserByIDStmt, readUserByID, id)
 	var i ReadUserByIDRow
 	err := row.Scan(
 		&i.ID,
@@ -125,4 +125,49 @@ func (q *Queries) ReadUserByID(ctx context.Context, imageUid string) (ReadUserBy
 		&i.ImageUid,
 	)
 	return i, err
+}
+
+const readUsersByFace = `-- name: ReadUsersByFace :many
+SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false AND image_uid IN ($1)
+`
+
+type ReadUsersByFaceRow struct {
+	ID          uuid.UUID      `json:"id"`
+	Name        sql.NullString `json:"name"`
+	CollegeName sql.NullString `json:"college_name"`
+	Address     sql.NullString `json:"address"`
+	MobileNo    sql.NullInt32  `json:"mobile_no"`
+	ImagePath   string         `json:"image_path"`
+	ImageUid    string         `json:"image_uid"`
+}
+
+func (q *Queries) ReadUsersByFace(ctx context.Context, imageUid string) ([]ReadUsersByFaceRow, error) {
+	rows, err := q.query(ctx, q.readUsersByFaceStmt, readUsersByFace, imageUid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ReadUsersByFaceRow
+	for rows.Next() {
+		var i ReadUsersByFaceRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CollegeName,
+			&i.Address,
+			&i.MobileNo,
+			&i.ImagePath,
+			&i.ImageUid,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

@@ -52,6 +52,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.readUserByIDStmt, err = db.PrepareContext(ctx, readUserByID); err != nil {
 		return nil, fmt.Errorf("error preparing query ReadUserByID: %w", err)
 	}
+	if q.readUsersByFaceStmt, err = db.PrepareContext(ctx, readUsersByFace); err != nil {
+		return nil, fmt.Errorf("error preparing query ReadUsersByFace: %w", err)
+	}
 	return &q, nil
 }
 
@@ -107,6 +110,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing readUserByIDStmt: %w", cerr)
 		}
 	}
+	if q.readUsersByFaceStmt != nil {
+		if cerr := q.readUsersByFaceStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing readUsersByFaceStmt: %w", cerr)
+		}
+	}
 	return err
 }
 
@@ -144,33 +152,35 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                DBTX
-	tx                *sql.Tx
-	createAdminStmt   *sql.Stmt
-	createPostStmt    *sql.Stmt
-	createUserStmt    *sql.Stmt
-	getAllPostsStmt   *sql.Stmt
-	getPostByIDStmt   *sql.Stmt
-	getPostsByTagStmt *sql.Stmt
-	listAllAdminStmt  *sql.Stmt
-	loginStmt         *sql.Stmt
-	readAllUsersStmt  *sql.Stmt
-	readUserByIDStmt  *sql.Stmt
+	db                  DBTX
+	tx                  *sql.Tx
+	createAdminStmt     *sql.Stmt
+	createPostStmt      *sql.Stmt
+	createUserStmt      *sql.Stmt
+	getAllPostsStmt     *sql.Stmt
+	getPostByIDStmt     *sql.Stmt
+	getPostsByTagStmt   *sql.Stmt
+	listAllAdminStmt    *sql.Stmt
+	loginStmt           *sql.Stmt
+	readAllUsersStmt    *sql.Stmt
+	readUserByIDStmt    *sql.Stmt
+	readUsersByFaceStmt *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                tx,
-		tx:                tx,
-		createAdminStmt:   q.createAdminStmt,
-		createPostStmt:    q.createPostStmt,
-		createUserStmt:    q.createUserStmt,
-		getAllPostsStmt:   q.getAllPostsStmt,
-		getPostByIDStmt:   q.getPostByIDStmt,
-		getPostsByTagStmt: q.getPostsByTagStmt,
-		listAllAdminStmt:  q.listAllAdminStmt,
-		loginStmt:         q.loginStmt,
-		readAllUsersStmt:  q.readAllUsersStmt,
-		readUserByIDStmt:  q.readUserByIDStmt,
+		db:                  tx,
+		tx:                  tx,
+		createAdminStmt:     q.createAdminStmt,
+		createPostStmt:      q.createPostStmt,
+		createUserStmt:      q.createUserStmt,
+		getAllPostsStmt:     q.getAllPostsStmt,
+		getPostByIDStmt:     q.getPostByIDStmt,
+		getPostsByTagStmt:   q.getPostsByTagStmt,
+		listAllAdminStmt:    q.listAllAdminStmt,
+		loginStmt:           q.loginStmt,
+		readAllUsersStmt:    q.readAllUsersStmt,
+		readUserByIDStmt:    q.readUserByIDStmt,
+		readUsersByFaceStmt: q.readUsersByFaceStmt,
 	}
 }

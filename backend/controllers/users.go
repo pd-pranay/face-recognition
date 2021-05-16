@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 )
 
 // UsersController is a controller and is defined here.
@@ -53,7 +53,7 @@ func (uc *UsersController) CreateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	uid, err := uuid.NewV4()
+	uid, err := uuid.NewUUID()
 	if err != nil {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"code":  500,
@@ -108,14 +108,15 @@ func (uc *UsersController) ReadAllUsers(c *fiber.Ctx) error {
 }
 
 func (uc *UsersController) ReadUserByID(c *fiber.Ctx) error {
-	id := c.Params("id")
-	if id == "" {
+	id, err := uuid.FromBytes([]byte(c.Params("id")))
+	if err == nil {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"code":  500,
 			"error": "Empty ID",
 		})
 	}
-	user, err := uc.Queries.ReadUserByID(c.Context(), "")
+
+	user, err := uc.Queries.ReadUserByID(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"code":  500,
@@ -129,15 +130,16 @@ func (uc *UsersController) ReadUserByID(c *fiber.Ctx) error {
 		})
 }
 
-func (uc *UsersController) DeleteUserByID(c *fiber.Ctx) error {
+func (uc *UsersController) ReadFaceID(c *fiber.Ctx) error {
+
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"code":  500,
-			"error": "Empty ID",
+			"error": "empty id",
 		})
 	}
-	user, err := uc.Queries.ReadUserByID(c.Context(), "")
+	match, err := uc.Queries.ReadUsersByFace(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"code":  500,
@@ -147,8 +149,15 @@ func (uc *UsersController) DeleteUserByID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).
 		JSON(fiber.Map{
 			"code": 200,
-			"data": user,
+			"data": match,
 		})
+}
+
+// --name: UpdateUserByID :one
+// UPDATE users SET name = ($1), college_name = ($2), address = ($3), mobile_no = ($4), image_path = ($5), image_uid = ($6) WHERE id = ($1) RETURNING id, name, college_name, address, mobile_no, image_uid, image_path;
+func (uc *UsersController) DeleteUserByID(c *fiber.Ctx) error {
+
+	return nil
 }
 
 func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
