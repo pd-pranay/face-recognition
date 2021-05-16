@@ -53,6 +53,15 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateU
 	return i, err
 }
 
+const deleteUsersById = `-- name: DeleteUsersById :exec
+DELETE FROM users WHERE id = $1
+`
+
+func (q *Queries) DeleteUsersById(ctx context.Context, id uuid.UUID) error {
+	_, err := q.exec(ctx, q.deleteUsersByIdStmt, deleteUsersById, id)
+	return err
+}
+
 const readAllUsers = `-- name: ReadAllUsers :many
 SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false
 `
@@ -173,11 +182,29 @@ func (q *Queries) ReadUsersByFace(ctx context.Context, imageUid string) ([]ReadU
 }
 
 const updateUserFlush = `-- name: UpdateUserFlush :one
-UPDATE users SET is_deleted = true WHERE id = $1 RETURNING id, index, name, college_name, address, mobile_no, image_path, image_uid, is_deleted, created_at, updated_at
+UPDATE users SET name = ($2), college_name = ($3), address = ($4), mobile_no = ($5), image_path = ($6), image_uid = ($7) WHERE id = ($1) RETURNING id, index, name, college_name, address, mobile_no, image_path, image_uid, is_deleted, created_at, updated_at
 `
 
-func (q *Queries) UpdateUserFlush(ctx context.Context, id uuid.UUID) (User, error) {
-	row := q.queryRow(ctx, q.updateUserFlushStmt, updateUserFlush, id)
+type UpdateUserFlushParams struct {
+	ID          uuid.UUID      `json:"id"`
+	Name        sql.NullString `json:"name"`
+	CollegeName sql.NullString `json:"college_name"`
+	Address     sql.NullString `json:"address"`
+	MobileNo    sql.NullInt32  `json:"mobile_no"`
+	ImagePath   string         `json:"image_path"`
+	ImageUid    string         `json:"image_uid"`
+}
+
+func (q *Queries) UpdateUserFlush(ctx context.Context, arg UpdateUserFlushParams) (User, error) {
+	row := q.queryRow(ctx, q.updateUserFlushStmt, updateUserFlush,
+		arg.ID,
+		arg.Name,
+		arg.CollegeName,
+		arg.Address,
+		arg.MobileNo,
+		arg.ImagePath,
+		arg.ImageUid,
+	)
 	var i User
 	err := row.Scan(
 		&i.ID,

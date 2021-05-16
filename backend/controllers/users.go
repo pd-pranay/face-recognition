@@ -153,31 +153,29 @@ func (uc *UsersController) ReadFaceID(c *fiber.Ctx) error {
 		})
 }
 
-func (uc *UsersController) DeleteUserByID(c *fiber.Ctx) error {
-	id, err := uuid.FromBytes([]byte(c.Params("id")))
-	if err == nil {
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"code":  500,
-			"error": "Empty ID",
-		})
-	}
+// func (uc *UsersController) DeleteUserByID(c *fiber.Ctx) error {
+// 	id, err := uuid.FromBytes([]byte(c.Params("id")))
+// 	if err == nil {
+// 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+// 			"code":  500,
+// 			"error": "Empty ID",
+// 		})
+// 	}
 
-	user, err := uc.Queries.UpdateUserFlush(c.Context(), id)
-	if err != nil {
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"code":  500,
-			"error": err.Error(),
-		})
-	}
-	return c.Status(fiber.StatusOK).
-		JSON(fiber.Map{
-			"code": 200,
-			"data": user,
-		})
-}
+// 	user, err := uc.Queries.UpdateUserFlush(c.Context(), id)
+// 	if err != nil {
+// 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+// 			"code":  500,
+// 			"error": err.Error(),
+// 		})
+// 	}
+// 	return c.Status(fiber.StatusOK).
+// 		JSON(fiber.Map{
+// 			"code": 200,
+// 			"data": user,
+// 		})
+// }
 
-// --name: ModifyUserByID :one
-// UPDATE users SET name = ($2), college_name = ($3), address = ($4), mobile_no = ($5), image_path = ($6), image_uid = ($7) WHERE id = ($1) RETURNING *;
 func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
 	return nil
 }

@@ -11,4 +11,7 @@ SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM us
 SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false AND image_uid IN ($1);
 
 -- name: UpdateUserFlush :one
-UPDATE users SET is_deleted = true WHERE id = $1 RETURNING *;
+UPDATE users SET name = ($2), college_name = ($3), address = ($4), mobile_no = ($5), image_path = ($6), image_uid = ($7) WHERE id = ($1) RETURNING *;
+
+-- name: DeleteUsersById :exec
+DELETE FROM users WHERE id = $1;
