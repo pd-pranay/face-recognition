@@ -153,13 +153,31 @@ func (uc *UsersController) ReadFaceID(c *fiber.Ctx) error {
 		})
 }
 
-// --name: UpdateUserByID :one
-// UPDATE users SET name = ($1), college_name = ($2), address = ($3), mobile_no = ($4), image_path = ($5), image_uid = ($6) WHERE id = ($1) RETURNING id, name, college_name, address, mobile_no, image_uid, image_path;
 func (uc *UsersController) DeleteUserByID(c *fiber.Ctx) error {
+	id, err := uuid.FromBytes([]byte(c.Params("id")))
+	if err == nil {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"code":  500,
+			"error": "Empty ID",
+		})
+	}
 
-	return nil
+	user, err := uc.Queries.UpdateUserFlush(c.Context(), id)
+	if err != nil {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"code":  500,
+			"error": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).
+		JSON(fiber.Map{
+			"code": 200,
+			"data": user,
+		})
 }
 
+// --name: ModifyUserByID :one
+// UPDATE users SET name = ($2), college_name = ($3), address = ($4), mobile_no = ($5), image_path = ($6), image_uid = ($7) WHERE id = ($1) RETURNING *;
 func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
 	return nil
 }

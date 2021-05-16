@@ -171,3 +171,26 @@ func (q *Queries) ReadUsersByFace(ctx context.Context, imageUid string) ([]ReadU
 	}
 	return items, nil
 }
+
+const updateUserFlush = `-- name: UpdateUserFlush :one
+UPDATE users SET is_deleted = true WHERE id = $1 RETURNING id, index, name, college_name, address, mobile_no, image_path, image_uid, is_deleted, created_at, updated_at
+`
+
+func (q *Queries) UpdateUserFlush(ctx context.Context, id uuid.UUID) (User, error) {
+	row := q.queryRow(ctx, q.updateUserFlushStmt, updateUserFlush, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Index,
+		&i.Name,
+		&i.CollegeName,
+		&i.Address,
+		&i.MobileNo,
+		&i.ImagePath,
+		&i.ImageUid,
+		&i.IsDeleted,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
