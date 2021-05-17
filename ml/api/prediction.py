@@ -46,7 +46,7 @@ def testImage(fileName, encodeListKnown):
 
         matchIndex = np.argmin(faceDis)
         if matches[matchIndex]:
-            name = classNames[matchIndex].upper()
+            name = classNames[matchIndex]
             face_ids.append(name)
     print("face==> ", face_ids)
     return face_ids

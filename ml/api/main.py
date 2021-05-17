@@ -1,8 +1,8 @@
 from flask import Flask, request, redirect
-from werkzeug.utils import secure_filename
+# from werkzeug.utils import secure_filename
 import os
 import json
-import requests
+# import requests
 import base64
 import prediction
 from flask_cors import CORS
