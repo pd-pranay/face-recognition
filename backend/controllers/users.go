@@ -63,9 +63,13 @@ func (uc *UsersController) CreateUser(c *fiber.Ctx) error {
 
 	file.Filename = uid.String() + "." + fileType
 
-	imgPath := fmt.Sprintf("./known/%s", file.Filename)
+	imgPath := fmt.Sprintf("../ml/api/images/images_test/%s", file.Filename)
 	if err := c.SaveFile(file, imgPath); err != nil {
 		log.Println("err ", err)
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"code":  500,
+			"error": err.Error(),
+		})
 	}
 
 	body := db.CreateUserParams{

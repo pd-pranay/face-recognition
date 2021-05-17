@@ -45,11 +45,14 @@ func main() {
 		return c.SendString("Hello, World 👋!")
 	})
 
+	// http://localhost:5000/static/e6e83a6f-b735-11eb-a19f-28f10e3afca4.jpeg
+	app.Static("/static", "../ml/api/images/images_test")
+
 	app.Use(cors.New(cors.Config{
 		// AllowCredentials: false,
 		AllowOrigins: "http://localhost:3000/",
 	}))
-
+	log.Println("Server running at port 5000")
 	log.Fatal(app.Listen(":5000"))
 
 }
