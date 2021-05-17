@@ -63,7 +63,7 @@ func (uc *UsersController) CreateUser(c *fiber.Ctx) error {
 
 	file.Filename = uid.String() + "." + fileType
 
-	imgPath := fmt.Sprintf("../ml/img/known/%s", file.Filename)
+	imgPath := fmt.Sprintf("./known/%s", file.Filename)
 	if err := c.SaveFile(file, imgPath); err != nil {
 		log.Println("err ", err)
 	}
