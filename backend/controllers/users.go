@@ -75,6 +75,7 @@ func (uc *UsersController) CreateUser(c *fiber.Ctx) error {
 	body := db.CreateUserParams{
 		Name:        sql.NullString{String: c.FormValue("name"), Valid: true},
 		CollegeName: sql.NullString{String: c.FormValue("college_name"), Valid: true},
+		Address:     sql.NullString{String: c.FormValue("address"), Valid: true},
 		MobileNo:    sql.NullInt32{Int32: 78, Valid: true},
 		ImagePath:   file.Filename,
 		ImageUid:    uid.String(),
