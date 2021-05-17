@@ -108,11 +108,12 @@ func (uc *UsersController) ReadAllUsers(c *fiber.Ctx) error {
 }
 
 func (uc *UsersController) ReadUserByID(c *fiber.Ctx) error {
-	id, err := uuid.FromBytes([]byte(c.Params("id")))
-	if err == nil {
+	log.Println("c.Params", c.Params("id"))
+	id := (c.Params("id"))
+	if id == "" {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"code":  500,
-			"error": "Empty ID",
+			"error": " err.Error()",
 		})
 	}
 
@@ -127,6 +128,37 @@ func (uc *UsersController) ReadUserByID(c *fiber.Ctx) error {
 		JSON(fiber.Map{
 			"code": 200,
 			"data": user,
+		})
+}
+
+func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
+	// user, err := uc.Queries.UpdateUser(c.Context(), c.Params("id"))
+	// if err != nil {
+	// 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+	// 		"code":  500,
+	// 		"error": err.Error(),
+	// 	})
+	// }
+	// return c.Status(fiber.StatusOK).
+	// 	JSON(fiber.Map{
+	// 		"code": 200,
+	// 		"data": user,
+	// 	})
+	return nil
+}
+
+func (uc *UsersController) DeleteUserByID(c *fiber.Ctx) error {
+	if err := uc.Queries.DeleteUsersById(c.Context(), c.Params("id")); err != nil {
+		return c.Status(fiber.StatusOK).
+			JSON(fiber.Map{
+				"code": 500,
+				"data": err.Error(),
+			})
+	}
+	return c.Status(fiber.StatusOK).
+		JSON(fiber.Map{
+			"code": 200,
+			"data": "Success",
 		})
 }
 
@@ -151,31 +183,4 @@ func (uc *UsersController) ReadFaceID(c *fiber.Ctx) error {
 			"code": 200,
 			"data": match,
 		})
-}
-
-// func (uc *UsersController) DeleteUserByID(c *fiber.Ctx) error {
-// 	id, err := uuid.FromBytes([]byte(c.Params("id")))
-// 	if err == nil {
-// 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-// 			"code":  500,
-// 			"error": "Empty ID",
-// 		})
-// 	}
-
-// 	user, err := uc.Queries.UpdateUserFlush(c.Context(), id)
-// 	if err != nil {
-// 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-// 			"code":  500,
-// 			"error": err.Error(),
-// 		})
-// 	}
-// 	return c.Status(fiber.StatusOK).
-// 		JSON(fiber.Map{
-// 			"code": 200,
-// 			"data": user,
-// 		})
-// }
-
-func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
-	return nil
 }

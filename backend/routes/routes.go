@@ -56,5 +56,20 @@ func UsersRoutes(app fiber.Router, ac *controllers.UsersController) {
 	users.Get("/", func(c *fiber.Ctx) error {
 		return ac.ReadAllUsers(c)
 	})
+	users.Get("/read/:id", func(c *fiber.Ctx) error {
+		return ac.ReadUserByID(c)
+	})
+
+	users.Put("/:id", func(c *fiber.Ctx) error {
+		return ac.UpdateUserByID(c)
+	})
+
+	users.Delete("/:id", func(c *fiber.Ctx) error {
+		return ac.DeleteUserByID(c)
+	})
+
+	users.Get("/ml/:id", func(c *fiber.Ctx) error {
+		return ac.ReadFaceID(c)
+	})
 
 }

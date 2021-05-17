@@ -58,8 +58,8 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.readUsersByFaceStmt, err = db.PrepareContext(ctx, readUsersByFace); err != nil {
 		return nil, fmt.Errorf("error preparing query ReadUsersByFace: %w", err)
 	}
-	if q.updateUserFlushStmt, err = db.PrepareContext(ctx, updateUserFlush); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateUserFlush: %w", err)
+	if q.updateUserStmt, err = db.PrepareContext(ctx, updateUser); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateUser: %w", err)
 	}
 	return &q, nil
 }
@@ -126,9 +126,9 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing readUsersByFaceStmt: %w", cerr)
 		}
 	}
-	if q.updateUserFlushStmt != nil {
-		if cerr := q.updateUserFlushStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateUserFlushStmt: %w", cerr)
+	if q.updateUserStmt != nil {
+		if cerr := q.updateUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateUserStmt: %w", cerr)
 		}
 	}
 	return err
@@ -182,7 +182,7 @@ type Queries struct {
 	readAllUsersStmt    *sql.Stmt
 	readUserByIDStmt    *sql.Stmt
 	readUsersByFaceStmt *sql.Stmt
-	updateUserFlushStmt *sql.Stmt
+	updateUserStmt      *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -201,6 +201,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		readAllUsersStmt:    q.readAllUsersStmt,
 		readUserByIDStmt:    q.readUserByIDStmt,
 		readUsersByFaceStmt: q.readUsersByFaceStmt,
-		updateUserFlushStmt: q.updateUserFlushStmt,
+		updateUserStmt:      q.updateUserStmt,
 	}
 }
