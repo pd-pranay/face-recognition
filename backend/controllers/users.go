@@ -4,7 +4,9 @@ import (
 	"backend/db"
 	"database/sql"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -191,6 +193,16 @@ func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
+	pathDelete := "../ml/api/images/images_test/"
+	err = findFileName(pathDelete, id)
+	if err != nil {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"code":  500,
+			"error": err.Error(),
+		})
+	} else {
+		log.Println("deleted")
+	}
 
 	return c.Status(fiber.StatusOK).
 		JSON(fiber.Map{
@@ -243,4 +255,25 @@ func (uc *UsersController) ReadFaceID(c *fiber.Ctx) error {
 			"code": 200,
 			"data": match,
 		})
+}
+
+func findFileName(path, id string) error {
+
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return err
+	}
+
+	for _, f := range files {
+		fname := strings.Split(f.Name(), ".")
+		if fname[0] == id {
+			r := path + f.Name()
+			err := os.Remove(r)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+	}
+	return err
 }
