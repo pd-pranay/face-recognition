@@ -176,13 +176,21 @@ func (uc *UsersController) ReadFaceID(c *fiber.Ctx) error {
 			"error": "empty id",
 		})
 	}
-	match, err := uc.Queries.ReadUsersByFace(c.Context(), id)
+
+	tags := strings.Split(id, ",")
+	values := make([]string, 0, len(tags))
+	for _, s := range tags {
+		values = append(values, s)
+	}
+
+	match, err := uc.Queries.ReadUsersByFace(c.Context(), values)
 	if err != nil {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"code":  500,
 			"error": err.Error(),
 		})
 	}
+
 	return c.Status(fiber.StatusOK).
 		JSON(fiber.Map{
 			"code": 200,

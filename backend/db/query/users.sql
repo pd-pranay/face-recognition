@@ -8,7 +8,7 @@ SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM us
 SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false AND image_uid = ($1);
 
 -- name: ReadUsersByFace :many
-SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false AND image_uid IN ($1);
+SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false AND image_uid = ANY($1::text[]);
 
 -- name: UpdateUser :one
 UPDATE users SET name = ($2), college_name = ($3), address = ($4), mobile_no = ($5), image_path = ($6), image_uid = ($7) WHERE image_uid = ($1) RETURNING *;

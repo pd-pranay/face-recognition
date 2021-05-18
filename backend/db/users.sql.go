@@ -8,6 +8,7 @@ import (
 	"database/sql"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -137,7 +138,7 @@ func (q *Queries) ReadUserByID(ctx context.Context, imageUid string) (ReadUserBy
 }
 
 const readUsersByFace = `-- name: ReadUsersByFace :many
-SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false AND image_uid IN ($1)
+SELECT id, name, college_name, address, mobile_no, image_path, image_uid FROM users WHERE is_deleted = false AND image_uid = ANY($1::text[])
 `
 
 type ReadUsersByFaceRow struct {
@@ -150,8 +151,8 @@ type ReadUsersByFaceRow struct {
 	ImageUid    string         `json:"image_uid"`
 }
 
-func (q *Queries) ReadUsersByFace(ctx context.Context, imageUid string) ([]ReadUsersByFaceRow, error) {
-	rows, err := q.query(ctx, q.readUsersByFaceStmt, readUsersByFace, imageUid)
+func (q *Queries) ReadUsersByFace(ctx context.Context, dollar_1 []string) ([]ReadUsersByFaceRow, error) {
+	rows, err := q.query(ctx, q.readUsersByFaceStmt, readUsersByFace, pq.Array(dollar_1))
 	if err != nil {
 		return nil, err
 	}
