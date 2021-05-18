@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"backend/db"
+	"backend/utils"
 	"database/sql"
 	"time"
 
@@ -25,6 +26,8 @@ func NewAdminController(db *sql.DB, queries *db.Queries) *AdminController {
 }
 
 func (ac *AdminController) CreateAdmin(c *fiber.Ctx) error {
+	utils.AddHeader(c)
+
 	body := db.CreateAdminParams{}
 	err := c.BodyParser(&body)
 	if err != nil {
@@ -62,6 +65,7 @@ func (ac *AdminController) CreateAdmin(c *fiber.Ctx) error {
 
 func (ac *AdminController) Login(c *fiber.Ctx) error {
 
+	utils.AddHeader(c)
 	type login struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -123,6 +127,9 @@ func (ac *AdminController) Login(c *fiber.Ctx) error {
 }
 
 func (ac *AdminController) ListAdmins(c *fiber.Ctx) error {
+
+	utils.AddHeader(c)
+
 	admins, err := ac.Queries.ListAllAdmin(c.Context())
 	if err != nil {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{

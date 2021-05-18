@@ -49,8 +49,18 @@ func main() {
 	app.Static("/static", "../ml/api/images/images_test")
 
 	app.Use(cors.New(cors.Config{
+		AllowCredentials: true,
+		// AllowOrigins: "http://localhost, http://localhost:4200",
+		// AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
+		// AllowHeaders:     "Origin, Accept, Content-Type, X-Requested-With, X-XSRF-TOKEN, Cookie, token",
+
+		// Next:             nil,
+		// AllowOrigins:     "*",
+		// AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH",
+		// AllowHeaders:     "",
 		// AllowCredentials: false,
-		AllowOrigins: "http://localhost:3000/",
+		// ExposeHeaders:    "",
+		// MaxAge:           0,
 	}))
 	log.Println("Server running at port 5000")
 	log.Fatal(app.Listen(":5000"))

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"backend/db"
+	"backend/utils"
 	"database/sql"
 	"fmt"
 	"io/ioutil"
@@ -38,6 +39,8 @@ func allowedFileType(ext string) bool {
 }
 
 func (uc *UsersController) CreateUser(c *fiber.Ctx) error {
+	utils.AddHeader(c)
+
 	file, err := c.FormFile("file")
 	if err != nil {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -99,6 +102,8 @@ func (uc *UsersController) CreateUser(c *fiber.Ctx) error {
 }
 
 func (uc *UsersController) ReadAllUsers(c *fiber.Ctx) error {
+	utils.AddHeader(c)
+
 	allUsers, err := uc.Queries.ReadAllUsers(c.Context())
 	if err != nil {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -114,7 +119,8 @@ func (uc *UsersController) ReadAllUsers(c *fiber.Ctx) error {
 }
 
 func (uc *UsersController) ReadUserByID(c *fiber.Ctx) error {
-	log.Println("c.Params", c.Params("id"))
+	utils.AddHeader(c)
+
 	id := (c.Params("id"))
 	if id == "" {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -138,6 +144,8 @@ func (uc *UsersController) ReadUserByID(c *fiber.Ctx) error {
 }
 
 func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
+	utils.AddHeader(c)
+
 	id := c.Params("id")
 
 	file, err := c.FormFile("file")
@@ -212,6 +220,8 @@ func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
 }
 
 func (uc *UsersController) DeleteUserByID(c *fiber.Ctx) error {
+	utils.AddHeader(c)
+
 	if err := uc.Queries.DeleteUsersById(c.Context(), c.Params("id")); err != nil {
 		return c.Status(fiber.StatusOK).
 			JSON(fiber.Map{
@@ -227,6 +237,7 @@ func (uc *UsersController) DeleteUserByID(c *fiber.Ctx) error {
 }
 
 func (uc *UsersController) ReadFaceID(c *fiber.Ctx) error {
+	utils.AddHeader(c)
 
 	id := c.Params("id")
 	if id == "" {
