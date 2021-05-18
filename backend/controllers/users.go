@@ -65,7 +65,7 @@ func (uc *UsersController) CreateUser(c *fiber.Ctx) error {
 
 	file.Filename = uid.String() + "." + fileType
 
-	imgPath := fmt.Sprintf("../ml/api/images/images_test/%s", file.Filename)
+	imgPath := fmt.Sprintf("../ml/api/images/images_training/%s", file.Filename)
 	if err := c.SaveFile(file, imgPath); err != nil {
 		log.Println("err ", err)
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -167,7 +167,7 @@ func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
 
 	file.Filename = uid.String() + "." + fileType
 
-	imgPath := fmt.Sprintf("../ml/api/images/images_test/%s", file.Filename)
+	imgPath := fmt.Sprintf("../ml/api/images/images_training/%s", file.Filename)
 	if err := c.SaveFile(file, imgPath); err != nil {
 		log.Println("err ", err)
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -193,7 +193,7 @@ func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
-	pathDelete := "../ml/api/images/images_test/"
+	pathDelete := "../ml/api/images/images_training/"
 	err = findFileName(pathDelete, id)
 	if err != nil {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
