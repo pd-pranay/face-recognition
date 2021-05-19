@@ -1,6 +1,6 @@
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NbAuthModule, NbDummyAuthStrategy } from '@nebular/auth';
+import { NbAuthModule, NbPasswordAuthStrategy, NbAuthJWTToken, NbAuthService, NbTokenStorage, NbTokenLocalStorage } from '@nebular/auth';
 import { NbSecurityModule, NbRoleProvider } from '@nebular/security';
 import { of as observableOf } from 'rxjs';
 
@@ -52,6 +52,7 @@ import { StatsProgressBarService } from './mock/stats-progress-bar.service';
 import { VisitorsAnalyticsService } from './mock/visitors-analytics.service';
 import { SecurityCamerasService } from './mock/security-cameras.service';
 import { MockDataModule } from './mock/mock-data.module';
+import { environment } from '../../environments/environment';
 
 const socialLinks = [
   {
@@ -106,20 +107,36 @@ export const NB_CORE_PROVIDERS = [
   ...NbAuthModule.forRoot({
 
     strategies: [
-      NbDummyAuthStrategy.setup({
+      NbPasswordAuthStrategy.setup({
         name: 'email',
-        delay: 3000,
+        baseEndpoint: environment.hostUrl,
+        token: {
+          class: NbAuthJWTToken,
+          key: 'token', // this parameter tells where to look for the token
+        },
+        login: {
+          endpoint: 'admin/login',
+          method: 'post',
+          redirect: {
+            success: 'forms/list-user', // welcome page path
+            failure: null, // stay on the same page
+          },
+        }
       }),
     ],
     forms: {
       login: {
-        socialLinks: socialLinks,
-      },
-      register: {
-        socialLinks: socialLinks,
+        redirectDelay: 300,
+        strategy: 'email',  // strategy id key.
+        rememberMe: false,   // whether to show or not the `rememberMe` checkbox
+        showMessages: {
+          success: true,
+          error: true,
+        },
       },
     },
   }).providers,
+  { provide: NbTokenStorage, useClass: NbTokenLocalStorage },
 
   NbSecurityModule.forRoot({
     accessControl: {
