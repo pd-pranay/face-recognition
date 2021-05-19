@@ -17,20 +17,22 @@ export class FindUserComponent implements OnInit {
   }
 
   postData() {
+
     const data: any = new FormData();
     data.append('file1', this.SelectedFile);
 
     this.service.sendMlCall(data).subscribe(
       (response: any) => {
+        console.log("ml", response);
         if (response && response.match.length > 0) {
-          console.log("ml", response);
-
           this.service.fetchMatchUsers(response.match.join()).subscribe(
             (res: any) => {
               if (res.code == 200) {
                 console.log('success', res);
+                this.data = res.data;
               } else {
                 this.alerts.push(res.error);
+                console.log("golang api", res.error);
               }
             }, (err) => {
               console.log("golang err", err);
@@ -38,12 +40,14 @@ export class FindUserComponent implements OnInit {
           );
 
         } else {
+          console.log("ml err", response);
+
           this.alerts.push('no match');
         }
       },
       (err: any) => {
         this.alerts.push(err);
-        console.log('Error ', err);
+        console.log('Error ml ', err);
       }
     )
   }
