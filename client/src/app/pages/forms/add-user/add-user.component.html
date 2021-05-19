@@ -1,0 +1,39 @@
+<nb-card>
+  <nb-card-header>Add User</nb-card-header>
+  <nb-card-body>
+    <div class="container">
+      <p *ngFor="let alert of alerts">
+        <ngb-alert (close)="toggleAlert(alert)">
+          <strong> Warning! </strong> {{alert|uppercase}}
+        </ngb-alert>
+      </p>
+      <form>
+        <div class="form-group">
+          <label for="exampleFormControlFile1">upload File</label>
+          <input type="file" accept="image/*" name="creativeImage" class="form-control" [(ngModel)]="user.file"
+            (change)="onFileChanged($event)" id="creativeImage">
+        </div>
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" class="form-control" name="name" id="name" placeholder="Alex" [(ngModel)]="user.name">
+        </div>
+        <div class="form-group">
+          <label for="email">College Name</label>
+          <input type="email" class="form-control" name="email" id="email" placeholder="alex@gmail.com"
+            [(ngModel)]="user.college_name">
+        </div>
+        <div class="form-group">
+          <label for="address">Address</label>
+          <input type="address" class="form-control" name="address" id="address" placeholder=""
+            [(ngModel)]="user.address">
+        </div>
+        <div class="form-group">
+          <label for="Contact">Contact</label>
+          <input type="text" class="form-control" name="Contact" id="Contact" placeholder="Phone"
+            [(ngModel)]="user.mobile_no">
+        </div>
+        <button class="btn btn-primary" (click)="postData()">Submit</button>
+      </form>
+    </div>
+  </nb-card-body>
+</nb-card>

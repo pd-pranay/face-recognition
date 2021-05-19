@@ -1,0 +1,36 @@
+<nb-card>
+  <nb-card-header>List of Users
+    <p *ngFor="let alert of alerts">
+      <ngb-alert>
+        <strong> Warning! </strong> {{alert}}
+      </ngb-alert>
+    </p>
+  </nb-card-header>
+  <nb-card-body>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>Name</th>
+          <th>College Name</th>
+          <th class="w-35">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users ;let i = index">
+          <td>{{i+1}}</td>
+          <td>{{user.name.String}}</td>
+          <td>{{user.college_name.String}}</td>
+          <td>
+            <button (click)="editUser(user.image_uid)" class="btn btn-sm btn-primary"> <i
+                class="ion ion-edit"></i>&nbsp;
+              Edit </button>&nbsp;
+            <button (click)="deleteUser(user.image_uid)" class="btn btn-sm btn-danger"> <i
+                class="ion ion-trash-a"></i>&nbsp;
+              Delete </button>&nbsp;
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </nb-card-body>
+</nb-card>
