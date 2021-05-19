@@ -19,6 +19,10 @@ export class AddUserService {
   postData(data) {
     return this.httpClient.post(this.url + 'users', data);
   }
+
+  putData(id, data) {
+    return this.httpClient.put(this.url + 'users/' + id, data);
+  }
   getUserById(id) {
     return this.httpClient.get(this.url + 'users/read/' + id);
   }

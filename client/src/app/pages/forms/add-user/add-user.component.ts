@@ -34,7 +34,10 @@ export class AddUserComponent implements OnInit {
             (response: any) => {
               if (response.code == 200) {
                 console.log('User Fetched');
-                this.user.image_uid = response.data['image_uid'].String;
+                this.user.id = response.data['id'];
+                this.user.image_uid = response.data['image_uid'];
+                this.user.image_path = response.data['image_path'];
+                console.log(this.user.image_path, "=====");
                 this.user.name = response.data['name'].String;
                 this.user.college_name = response.data['college_name'].String;
                 this.user.address = response.data['address'].String;
@@ -85,7 +88,53 @@ export class AddUserComponent implements OnInit {
   }
 
   putData() {
+    this.alerts = [];
 
+    const data: any = new FormData();
+    data.append('name', this.user.name);
+    data.append('college_name', this.user.college_name);
+    data.append('address', this.user.address);
+    data.append('mobile_no', this.user.mobile_no);
+    console.log('===> ', this.SelectedFile);
+    if (this.SelectedFile == undefined) { // uid no image update
+      data.append('is_change', "no");
+      data.append('image_uid', this.user.image_uid);
+      data.append('image_path', this.user.image_path);
+      console.log('image not updated');
+    } else {
+      console.log('image updated');
+      data.append('is_change', "yes");
+      data.append('file', this.SelectedFile);
+
+    }
+
+    this.addUserService.putData(this.user.image_uid, data).subscribe(
+      (response: any) => {
+        if (response.code == 200) {
+          console.log('User Updated');
+          this.router.navigateByUrl('/pages/forms/list-user');
+        } else {
+          this.alerts.push(response.error);
+        }
+      },
+      (err) => {
+        this.alerts.push(err);
+        console.log('Error ', err);
+      }
+    )
+
+  }
+
+  submit() {
+    console.log('id ===> ', this.user.id);
+    if (this.user.id) {
+      this.putData()
+      console.log('update block');
+    } else {
+      console.log('post block');
+
+      this.postData()
+    }
   }
 
   SelectedFile: File;

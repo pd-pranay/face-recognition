@@ -7,6 +7,8 @@
           <strong> Warning! </strong> {{alert|uppercase}}
         </ngb-alert>
       </p>
+
+      <img src="http://localhost:5000/static/{{this.user.image_path}}" height="200" width="250">
       <form>
         <div class="form-group">
           <label for="exampleFormControlFile1">upload File</label>
@@ -32,7 +34,7 @@
           <input type="text" class="form-control" name="Contact" id="Contact" placeholder="Phone"
             [(ngModel)]="user.mobile_no">
         </div>
-        <button class="btn btn-primary" (click)="postData()">Submit</button>
+        <button class="btn btn-primary" (click)="submit()">Submit</button>
       </form>
     </div>
   </nb-card-body>

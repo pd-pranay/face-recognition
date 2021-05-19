@@ -148,50 +148,71 @@ func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
 
 	id := c.Params("id")
 
-	file, err := c.FormFile("file")
-	if err != nil {
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"code":  500,
-			"error": err.Error(),
-		})
-	}
+	isChange := c.FormValue("is_change")
 
-	fileType := strings.Split(file.Filename, ".")[1]
+	var newID, newFileName string
 
-	if isAllowedExt := allowedFileType(fileType); !isAllowedExt {
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"code":  500,
-			"error": "File extension no allowed",
-		})
-	}
+	if isChange == "yes" {
+		file, err := c.FormFile("file")
+		if err != nil {
+			return c.Status(fiber.StatusOK).JSON(fiber.Map{
+				"code":  500,
+				"error": err.Error(),
+			})
+		}
 
-	uid, err := uuid.NewUUID()
-	if err != nil {
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"code":  500,
-			"error": err.Error(),
-		})
-	}
+		fileType := strings.Split(file.Filename, ".")[1]
 
-	file.Filename = uid.String() + "." + fileType
+		if isAllowedExt := allowedFileType(fileType); !isAllowedExt {
+			return c.Status(fiber.StatusOK).JSON(fiber.Map{
+				"code":  500,
+				"error": "File extension no allowed",
+			})
+		}
 
-	imgPath := fmt.Sprintf("../ml/api/images/images_training/%s", file.Filename)
-	if err := c.SaveFile(file, imgPath); err != nil {
-		log.Println("err ", err)
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"code":  500,
-			"error": err.Error(),
-		})
+		uid, err := uuid.NewUUID()
+		if err != nil {
+			return c.Status(fiber.StatusOK).JSON(fiber.Map{
+				"code":  500,
+				"error": err.Error(),
+			})
+		}
+		file.Filename = uid.String() + "." + fileType
+		newID = uid.String()
+		newFileName = file.Filename
+
+		imgPath := fmt.Sprintf("../ml/api/images/images_training/%s", file.Filename)
+		if err := c.SaveFile(file, imgPath); err != nil {
+			log.Println("err ", err)
+			return c.Status(fiber.StatusOK).JSON(fiber.Map{
+				"code":  500,
+				"error": err.Error(),
+			})
+		}
+
+		pathDelete := "../ml/api/images/images_training/"
+		err = findFileName(pathDelete, id)
+		if err != nil {
+			return c.Status(fiber.StatusOK).JSON(fiber.Map{
+				"code":  500,
+				"error": err.Error(),
+			})
+		} else {
+			log.Println("deleted")
+		}
+	} else {
+		newID = c.FormValue("image_uid")
+		newFileName = c.FormValue("image_path")
 	}
 
 	body := db.UpdateUserParams{
 		ImageUid:    id,
-		ImageUid_2:  uid.String(),
 		Name:        sql.NullString{String: c.FormValue("name"), Valid: true},
 		CollegeName: sql.NullString{String: c.FormValue("college_name"), Valid: true},
 		Address:     sql.NullString{String: c.FormValue("address"), Valid: true},
 		MobileNo:    sql.NullInt32{Int32: 78, Valid: true},
-		ImagePath:   file.Filename,
+		ImageUid_2:  newID,
+		ImagePath:   newFileName,
 	}
 
 	users, err := uc.Queries.UpdateUser(c.Context(), body)
@@ -200,16 +221,6 @@ func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
 			"code":  500,
 			"error": err.Error(),
 		})
-	}
-	pathDelete := "../ml/api/images/images_training/"
-	err = findFileName(pathDelete, id)
-	if err != nil {
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"code":  500,
-			"error": err.Error(),
-		})
-	} else {
-		log.Println("deleted")
 	}
 
 	return c.Status(fiber.StatusOK).
@@ -221,14 +232,26 @@ func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
 
 func (uc *UsersController) DeleteUserByID(c *fiber.Ctx) error {
 	utils.AddHeader(c)
-
-	if err := uc.Queries.DeleteUsersById(c.Context(), c.Params("id")); err != nil {
+	id := c.Params("id")
+	if err := uc.Queries.DeleteUsersById(c.Context(), id); err != nil {
 		return c.Status(fiber.StatusOK).
 			JSON(fiber.Map{
 				"code": 500,
 				"data": err.Error(),
 			})
 	}
+
+	pathDelete := "../ml/api/images/images_training/"
+	err := findFileName(pathDelete, id)
+	if err != nil {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"code":  500,
+			"error": err.Error(),
+		})
+	} else {
+		log.Println("deleted")
+	}
+
 	return c.Status(fiber.StatusOK).
 		JSON(fiber.Map{
 			"code": 200,
