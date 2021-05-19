@@ -46,7 +46,7 @@ func main() {
 	})
 
 	// http://localhost:5000/static/e6e83a6f-b735-11eb-a19f-28f10e3afca4.jpeg
-	app.Static("/static", "../ml/api/images/images_test")
+	app.Static("/static", "../ml/api/images/images_training")
 
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: true,
