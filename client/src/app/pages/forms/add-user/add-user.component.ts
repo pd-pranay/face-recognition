@@ -54,11 +54,11 @@ export class AddUserComponent implements OnInit {
     //   console.log(v);
     // }
     this.addUserService.postData(data).subscribe(
-      (respose: any) => {
-        if (respose.code == 200) {
+      (response: any) => {
+        if (response.code == 200) {
           console.log('User Added');
         } else {
-          this.alerts.push(respose.error);
+          this.alerts.push(response.error);
         }
       },
       (err) => {

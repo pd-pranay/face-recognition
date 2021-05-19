@@ -3,7 +3,7 @@
   <nb-card-body>
     <div class="container">
       <p *ngFor="let alert of alerts">
-        <ngb-alert (close)="toggleAlert(alert)">
+        <ngb-alert>
           <strong> Warning! </strong> {{alert|uppercase}}
         </ngb-alert>
       </p>

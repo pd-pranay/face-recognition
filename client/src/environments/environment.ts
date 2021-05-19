@@ -11,4 +11,5 @@
 export const environment = {
   production: false,
   hostUrl: "http://localhost:5000/v1/api/",
+  mlUrl: "http://localhost:8000/",
 };
