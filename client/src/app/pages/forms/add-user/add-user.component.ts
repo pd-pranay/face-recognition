@@ -29,12 +29,26 @@ export class AddUserComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe(
       (params: any) => {
         if (params["image_uid"] != undefined) {
-          console.log(params);
-          this.user.image_uid = params['image_uid'];
-          this.user.name = params['name'].String;
-          this.user.college_name = params['college_name'].String;
-          this.user.address = params['address'].String;
-          this.user.mobile_no = params['mobile_no'].String;
+          console.log(params['image_uid']);
+          this.addUserService.getUserById(params['image_uid']).subscribe(
+            (response: any) => {
+              if (response.code == 200) {
+                console.log('User Fetched');
+                this.user.image_uid = response.data['image_uid'].String;
+                this.user.name = response.data['name'].String;
+                this.user.college_name = response.data['college_name'].String;
+                this.user.address = response.data['address'].String;
+                this.user.mobile_no = response.data['mobile_no'].Int32;
+              } else {
+                this.alerts.push(response.error);
+              }
+            },
+            (err) => {
+              this.alerts.push(err);
+              console.log('Error ', err);
+            }
+          )
+
         }
       });
 
@@ -57,6 +71,7 @@ export class AddUserComponent implements OnInit {
       (response: any) => {
         if (response.code == 200) {
           console.log('User Added');
+          this.router.navigateByUrl('/pages/forms/list-user');
         } else {
           this.alerts.push(response.error);
         }

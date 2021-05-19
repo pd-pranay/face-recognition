@@ -40,24 +40,24 @@ export class ListUserComponent implements OnInit {
     );
   }
   editUser(id) {
-    this.listUsersService.getUserById(id).subscribe(
-      (response: any) => {
-        if (response.code == 200) {
-          console.log(response.data);
-          let navigationExtras: NavigationExtras = {
-            queryParams: response.data,
-          };
-          this.router.navigate(["/pages/forms", "add-user"], navigationExtras);
-        } else {
-          console.log("Error: ", response.error);
-          this.alerts.push(response.error);
-        }
-      },
-      err => {
-        console.error(err);
-        this.alerts.push(err);
-      }
-    );
+    // this.listUsersService.getUserById(id).subscribe(
+    //   (response: any) => {
+    //     if (response.code == 200) {
+    //       console.log(response.data);
+    let navigationExtras: NavigationExtras = {
+      queryParams: { image_uid: id },
+    };
+    this.router.navigate(["/pages/forms", "add-user"], navigationExtras);
+    //     } else {
+    //       console.log("Error: ", response.error);
+    //       this.alerts.push(response.error);
+    //     }
+    //   },
+    //   err => {
+    //     console.error(err);
+    //     this.alerts.push(err);
+    //   }
+    // );
   }
 
   deleteUser(id) {
