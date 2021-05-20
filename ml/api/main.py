@@ -23,18 +23,19 @@ def allowed_file(filename):
 def face_match():
     if request.method != 'POST':
         return "NOT POST"
-    # check if the post request has the file part
+
     if ('file1' not in request.files):
         return 'No file part'
 
     file1 = request.files.get('file1')
-    # if user does not select file, browser also submit an empty part without filename
+
     if file1.filename == '':
         return 'No selected file'
 
     if allowed_file(file1.filename):
+        prediction.classNames = []
         images = prediction.loadImages()
-        # print('images loadImages == ', images)
+        print('images loadImages == ', images)
 
         encodeListKnown = prediction.trainingImages(images)
         # print('encodeListKnown == ', encodeListKnown)
@@ -49,7 +50,10 @@ def face_match():
 
 @app.route('/')
 def hello_world():
-    return 'Hello, World!'
+    prediction.classNames = []
+    images = prediction.loadImages()
+    # print('images loadImages == ', images)
+    return "images"
 
 
 # Run in HTTP
