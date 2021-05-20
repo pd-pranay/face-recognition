@@ -18,6 +18,8 @@ export class FindUserComponent implements OnInit {
 
   postData() {
     this.data = [];
+    this.alerts = [];
+
     const data: any = new FormData();
     data.append('file1', this.SelectedFile);
 
@@ -56,9 +58,6 @@ export class FindUserComponent implements OnInit {
 
   onFileChanged(event) {
     this.SelectedFile = event.target.files[0];
-    console.log("FILE CHANGE");
-    console.log(event);
-    console.log(this.SelectedFile.name);
   }
 
 }
