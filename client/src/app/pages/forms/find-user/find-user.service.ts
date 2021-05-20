@@ -17,7 +17,7 @@ export class FindUserService {
   url = environment.hostUrl;
 
   sendMlCall(data) {
-    return this.httpClient.post(environment.mlUrl + '/face_match', data);
+    return this.httpClient.post(environment.mlUrl + 'face_match', data);
   }
 
   fetchMatchUsers(ids) {

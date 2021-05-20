@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"mime/multipart"
 	"os"
 	"strings"
 
@@ -151,9 +152,10 @@ func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
 	isChange := c.FormValue("is_change")
 
 	var newID, newFileName string
-
+	var file *multipart.FileHeader
+	var err error
 	if isChange == "yes" {
-		file, err := c.FormFile("file")
+		file, err = c.FormFile("file")
 		if err != nil {
 			return c.Status(fiber.StatusOK).JSON(fiber.Map{
 				"code":  500,
@@ -181,15 +183,6 @@ func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
 		newID = uid.String()
 		newFileName = file.Filename
 
-		imgPath := fmt.Sprintf("../ml/api/images/images_training/%s", file.Filename)
-		if err := c.SaveFile(file, imgPath); err != nil {
-			log.Println("err ", err)
-			return c.Status(fiber.StatusOK).JSON(fiber.Map{
-				"code":  500,
-				"error": err.Error(),
-			})
-		}
-
 		pathDelete := "../ml/api/images/images_training/"
 		err = findFileName(pathDelete, id)
 		if err != nil {
@@ -214,7 +207,6 @@ func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
 		ImageUid_2:  newID,
 		ImagePath:   newFileName,
 	}
-
 	users, err := uc.Queries.UpdateUser(c.Context(), body)
 	if err != nil {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -223,6 +215,17 @@ func (uc *UsersController) UpdateUserByID(c *fiber.Ctx) error {
 		})
 	}
 
+	if isChange == "yes" {
+
+		imgPath := fmt.Sprintf("../ml/api/images/images_training/%s", newFileName)
+		if err := c.SaveFile(file, imgPath); err != nil {
+			log.Println("err ", err)
+			return c.Status(fiber.StatusOK).JSON(fiber.Map{
+				"code":  500,
+				"error": err.Error(),
+			})
+		}
+	}
 	return c.Status(fiber.StatusOK).
 		JSON(fiber.Map{
 			"code": 200,

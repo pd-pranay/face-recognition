@@ -7,7 +7,7 @@ import base64
 import prediction
 from flask_cors import CORS
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 UPLOAD_FOLDER = 'received_files'

@@ -17,7 +17,7 @@ export class FindUserComponent implements OnInit {
   }
 
   postData() {
-
+    this.data = [];
     const data: any = new FormData();
     data.append('file1', this.SelectedFile);
 
