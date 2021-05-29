@@ -8,7 +8,7 @@
         </ngb-alert>
       </p>
 
-      <img src="http://localhost:5000/static/{{this.user.image_path}}" height="200" width="250">
+      <img src="http://localhost:5000/static/{{this.user.image_path}}" height="200" width="250" *ngIf="pic">
       <form>
         <div class="form-group">
           <label for="exampleFormControlFile1">upload File</label>
@@ -30,8 +30,8 @@
             [(ngModel)]="user.address">
         </div>
         <div class="form-group">
-          <label for="Contact">Contact</label>
-          <input type="text" class="form-control" name="Contact" id="Contact" placeholder="Phone"
+          <label for="Contact">Roll no</label>
+          <input type="text" class="form-control" name="Contact" id="Contact" placeholder="08"
             [(ngModel)]="user.mobile_no">
         </div>
         <button class="btn btn-primary" (click)="submit()">Submit</button>

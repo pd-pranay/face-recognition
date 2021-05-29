@@ -12,7 +12,7 @@ require (
 	github.com/gofiber/jwt/v2 v2.2.1
 	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/google/uuid v1.2.0
-	github.com/lib/pq v1.10.1
+	github.com/lib/pq v1.10.2
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/pressly/goose v2.7.0+incompatible // indirect
 	github.com/prometheus/common v0.14.0 // indirect

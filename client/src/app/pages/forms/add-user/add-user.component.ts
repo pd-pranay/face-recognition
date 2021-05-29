@@ -11,7 +11,7 @@ export class AddUserComponent implements OnInit {
 
   user: any = {};
   alerts: any = [];
-
+  pic = false;
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -29,6 +29,7 @@ export class AddUserComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe(
       (params: any) => {
         if (params["image_uid"] != undefined) {
+          this.pic = true;
           console.log(params['image_uid']);
           this.addUserService.getUserById(params['image_uid']).subscribe(
             (response: any) => {
